@@ -1,0 +1,47 @@
+# House Rules Check
+
+> Free, unofficial line-by-line checker for short-term-rental house rules under Airbnb's house rules policy for reservations booked on or after 2026-11-20 (listing editor changed 2026-10-20). Paste rules in English or Japanese; get per-rule findings, reasons (EN+JA), compliant rewrites, the standard rules to set, and Japan 民泊/旅館業 guest-register notes. Rules as of 2026-10-28. Not affiliated with Airbnb.
+
+Site: https://house-rules-check.vercel.app
+
+## Policy applied (Airbnb help article 4168 + Resource Center announcement of 2026-10-20)
+- Applies to reservations booked on or after 2026-11-20 (booking date, not stay date).
+- 7 standard rules: maximum overnight guests, quiet hours, events, pets, smoking, commercial photography, lock up at checkout. Plus reasonable "requests".
+- Rules must be disclosed in the listing's House rules and requests section before booking. No new rules later by message, signs in the home or in person.
+- No separate contracts and no personal information such as government ID, except where required by law and other limited circumstances.
+- Generally not allowed: tasks a cleaner would do or that take significant effort (stripping the bed, taking trash off-site, washing and putting away dishes); restricting a feature advertised in the listing (fees for advertised features must be in the price at booking; optional add-ons like breakfast may be described); fines or penalties (damage: AirCover; HOA/local-government fines: notice in the Local rules section).
+- Allowed examples: dishes in the sink, gather used towels, sort trash into designated indoor bins, turn off lights/AC, optional priced add-ons, safety information. Local exceptions possible (animal-proof bins in bear country, drought shower limits).
+
+## Japan
+- 住宅宿泊事業法 art. 8 (minpaku) and 旅館業法 art. 6 (hotel, ryokan, 簡易宿所) require a guest register: minpaku = name, address, occupation, dates; 旅館業 = name, address, contact details; foreign guests without a Japan address: nationality and passport number, see the passport and keep a copy (MLIT guideline). Fits Airbnb's "required by law" exception if disclosed in Requests before booking and limited to the legal items. Never My Number, selfies or deposits.
+- Art. 9: hosts must explain noise, trash and fire-prevention points (in a foreign language for foreign guests). Explanations can stay in the home; rules must be in the listing.
+- MLIT guideline: minpaku trash is business waste (事業系廃棄物) the operator disposes of; guests sort it into the designated place in the home. Don't send guests to the household collection point.
+
+## API (keyless, CORS open, JSON)
+GET https://house-rules-check.vercel.app/api/check?text=Please%20wash%20the%20dishes%20before%20checkout.%0ANo%20smoking%2C%20%24250%20fine.%0AQuiet%20hours%2010pm-8am.
+→ verdict "fix_needed"; items: likely_flagged (dishes), likely_flagged (fine), use_standard_rule (quiet hours)
+
+POST https://house-rules-check.vercel.app/api/check
+{"rules":["ゴミは近くのゴミ集積所に出してください。","宿泊者名簿への記入とパスポートの提示をお願いします。"],"jurisdiction":"JP","lodging":"minpaku"}
+→ items: likely_flagged (trash off-site, rewrite: sort into indoor bins), legal_exception (guest register + passport copy)
+
+Parameters: text (required; one rule per line, max 8000 chars / 80 rules) or rules (POST array), jurisdiction (JP | other, default JP), lodging (minpaku | ryokan | unknown), channel (listing | message | sign | in_person), bookingDate, today (YYYY-MM-DD).
+Findings: likely_flagged | review | move_to_section | legal_exception | use_standard_rule | likely_ok | no_match.
+Verdicts: fix_needed | review_needed | tidy_up | looks_ok.
+
+## Other endpoints
+- GET https://house-rules-check.vercel.app/api/rules
+- https://house-rules-check.vercel.app/openapi.json
+- https://house-rules-check.vercel.app/.well-known/ai-plugin.json
+- MCP: tool airbnb_house_rules_check on https://free-agent-tools.vercel.app/mcp
+
+## Sources
+- https://www.airbnb.com/help/article/4168
+- https://www.airbnb.com/resources/hosting-homes/a/important-changes-to-house-rules-21
+- https://www.airbnb.jp/help/article/4168
+- https://laws.e-gov.go.jp/law/429AC0000000065 (住宅宿泊事業法)
+- https://laws.e-gov.go.jp/law/323M40000100028 (旅館業法施行規則)
+- https://www.mlit.go.jp/kankocho/minpaku/content/001622384.pdf (住宅宿泊事業法施行要領)
+- https://www.mlit.go.jp/kankocho/content/001253672.pdf (guest identity confirmation)
+
+Disclaimer: educational keyword check, not legal advice, not affiliated with or endorsed by Airbnb. Findings are likely outcomes; Airbnb decides.

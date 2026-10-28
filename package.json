@@ -1,0 +1,31 @@
+{
+  "name": "house-rules-check",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Free checker for Airbnb house rules under the policy for reservations booked from 2026-11-20: paste rules (EN/JA) and see which are likely not allowed (cleaner tasks, trash off-site, fines, fees, amenity limits, contracts, ID, off-platform, rules after booking), with rewrites and Japan 民泊/旅館業 guest-register notes. Keyless JSON API + MCP. Not affiliated with Airbnb.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node --import tsx --test lib/rules.test.ts lib/api.test.ts lib/share.test.ts"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "next": "^16.3.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.3.5",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
