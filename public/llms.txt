@@ -35,6 +35,18 @@ Verdicts: fix_needed | review_needed | tidy_up | looks_ok.
 - https://house-rules-check.vercel.app/.well-known/ai-plugin.json
 - MCP: tool airbnb_house_rules_check on https://free-agent-tools.vercel.app/mcp
 
+## Other free tools
+- https://hotel-ota-calculator.vercel.app (hotel OTA commission calculator)
+- https://japan-trip-brain.vercel.app (Japan trip planner)
+- https://kyushu-travel-discount.vercel.app (Kyushu travel discount calculator)
+- https://japan-tax-free-refund.vercel.app (Japan tax-free refund from 2026-11-01)
+- https://japan-luggage.vercel.app (Shinkansen luggage rules)
+- https://japan-driving-check.vercel.app (driving in Japan on a foreign license)
+- https://japan-customs-allowance.vercel.app (duty-free allowance)
+- https://japan-alert-decoder.vercel.app (Japan emergency alert decoder)
+- https://japan-visa-fee.vercel.app (Japan visa fee calculator)
+- https://free-agent-tools.vercel.app (MCP server with all tools)
+
 ## Sources
 - https://www.airbnb.com/help/article/4168
 - https://www.airbnb.com/resources/hosting-homes/a/important-changes-to-house-rules-21

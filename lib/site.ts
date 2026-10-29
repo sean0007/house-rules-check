@@ -12,6 +12,9 @@ export const HONESTY =
 export const SIBLING_TOOLS = [
   { href: "https://hotel-ota-calculator.vercel.app", label: "Hotel OTA Calculator" },
   { href: "https://japan-trip-brain.vercel.app", label: "Japan Trip Brain" },
+  { href: "https://kyushu-travel-discount.vercel.app", label: "Kyushu Travel Discount" },
+  { href: "https://japan-tax-free-refund.vercel.app", label: "Japan Tax-Free Refund" },
+  { href: "https://japan-luggage.vercel.app", label: "Japan Luggage Check" },
   { href: "https://japan-driving-check.vercel.app", label: "Japan Driving Check" },
   { href: "https://japan-customs-allowance.vercel.app", label: "Japan Customs Allowance" },
   { href: "https://japan-alert-decoder.vercel.app", label: "Japan Alert Decoder" },
