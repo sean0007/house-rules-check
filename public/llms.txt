@@ -42,6 +42,7 @@ Verdicts: fix_needed | review_needed | tidy_up | looks_ok.
 - https://japan-tax-free-refund.vercel.app (Japan tax-free refund from 2026-11-01)
 - https://japan-luggage.vercel.app (Shinkansen luggage rules)
 - https://japan-driving-check.vercel.app (driving in Japan on a foreign license)
+- https://japan-mynumber-card-check.vercel.app (My Number Card expiry check)
 - https://japan-customs-allowance.vercel.app (duty-free allowance)
 - https://japan-alert-decoder.vercel.app (Japan emergency alert decoder)
 - https://japan-visa-fee.vercel.app (Japan visa fee calculator)
