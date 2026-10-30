@@ -94,3 +94,27 @@ test("splitting and input errors", () => {
   assert.throws(() => checkHouseRules({ text: "No pets", bookingDate: "2026-13-01" }), /bookingDate/);
   assert.ok(RULES_SUMMARY.policy.standardRules.length === 7);
 });
+
+test("AC / thermostat temperature limits are flagged like other AC limits; switching off stays ok", () => {
+  const limitAc = one("Limit the AC use.");
+  for (const t of [
+    "Do not set the AC below 24 degrees.",
+    "Don't set the thermostat below 70.",
+    "Please don't set the air conditioning lower than 22°C.",
+    "Never set the heat above 72.",
+    "Keep the thermostat above 68°F.",
+    "AC must not be set below 23.",
+    "Don't put the A/C under 20 degrees.",
+    "エアコンは26度以下に設定しないで",
+    "冷房は25度より下げないでください。",
+    "暖房は22度以上にしないでください。",
+  ]) {
+    const it = one(t);
+    assert.equal(it.finding, limitAc.finding, t);
+    assert.deepEqual(it.categories, limitAc.categories, t);
+    assert.equal(it.finding, "likely_flagged", t);
+  }
+  assert.equal(one("Turn off the AC when you leave and never set the AC below 20.").finding, "likely_flagged");
+  for (const t of ["Please turn off the AC when you leave.", "Turn off the AC and close the windows when you leave.", "外出時はエアコンを消してください。"]) assert.equal(one(t).finding, "likely_ok", t);
+  for (const t of ["Set the thermostat to your liking.", "The heater takes 10 minutes to warm up.", "Children under 12 must be supervised.", "Do not set off fireworks."]) assert.equal(one(t).finding, "no_match", t);
+});

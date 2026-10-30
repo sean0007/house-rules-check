@@ -61,6 +61,8 @@ const TRASH = "(?:trash|garbage|rubbish|recycling|recyclables|waste|bins?)";
 const TRASH_JA = "(?:ゴミ|ごみ|塵|生ゴミ|生ごみ|資源ゴミ|資源ごみ|ペットボトル|空き缶)";
 const AMEN = "(?:ac|a/c|air ?con\\w*|heater|heating|hot tub|jacuzzi|pool|kitchen|stove|oven|washer|washing machine|dryer|wi-?fi|fireplace|grill|bbq|barbecue|sauna|bath ?tub|bath|tv|parking)";
 const AMEN_JA = "(?:エアコン|冷房|暖房|ヒーター|キッチン|台所|コンロ|洗濯機|乾燥機|お風呂|浴槽|風呂|ジャグジー|サウナ|wi-?fi|bbq|バーベキュー|テレビ|駐車場)";
+const TEMP = "(?:ac|a/c|air ?con\\w*|thermostat|heat|heater|heating|temperature|temp)";
+const TEMP_CMP = "below|under|above|over|lower than|higher than|colder than|warmer than|less than|more than";
 
 const RULES: Rule[] = [
   // ---- not allowed: cleaner tasks ----
@@ -181,9 +183,14 @@ const RULES: Rule[] = [
       R(`\\b${AMEN}\\s+(is|are|may|can)?\\s*(only|not)\\s+(be\\s+)?(available|allowed|permitted|to be used|for use|used)\\b`),
       R(`\\b${AMEN}\\b.{0,20}\\b(only|not)\\s+(between|after|before|from|until|during)\\b|\\b(no|not)\\s+${AMEN}\\s+(after|before|between|during)`),
       R("\\b(limit|restrict|ration)\\w*\\s+(the\\s+)?(use\\s+of\\s+)?(the\\s+)?(ac|a/c|air ?con\\w*|heat\\w*|hot water|electricity|water|showers?|internet|wi-?fi)\\b|\\b(ac|a/c|thermostat|heating|air ?con\\w*)\\b.{0,20}\\b(no (lower|higher|colder|warmer) than|at least|min(imum)?|max(imum)?|between)\\b.{0,8}\\d"),
+      // Temperature limits phrased as "don't set the AC below 24" / "keep the thermostat above 68" / "AC must not be set under 23".
+      R(`\\b(set|put|turn|keep|lower|raise|adjust|run)\\w*\\s+(the\\s+)?${TEMP}\\b.{0,25}\\b(${TEMP_CMP})\\s*\\d`),
+      R(`\\b${TEMP}\\b\\s+(must|should|may|can|is|are)\\s*(not|n't)?\\s+(be\\s+)?(set|kept|turned|run|go|stay)\\w*\\s+(${TEMP_CMP})\\s*\\d`),
       R("\\bshowers?\\b.{0,20}\\b(limited|max(imum)?|no longer than|under)\\b|\\b\\d+[- ]?min(ute)?s?\\s+showers?"),
       new RegExp(`${AMEN_JA}(は|の)?(ご)?(使用|利用)?(は)?(禁止|不可|できません|ご遠慮|しないで|お控え)`, "i"),
       new RegExp(`${AMEN_JA}.{0,10}(設定|温度).{0,10}(\\d+度|以上|以下)|${AMEN_JA}.{0,6}(\\d+時|時間).{0,8}(まで|以降|のみ|限定)`, "i"),
+      // 「エアコンは26度以下に設定しないで」「冷房は25度より下げないで」「暖房は22度以上にしないで」
+      new RegExp(`${AMEN_JA}.{0,12}\\d+\\s*(度|℃|°).{0,4}(以下|以上|未満|より|を(超え|下回|上回))`, "i"),
       /シャワー.{0,8}(\d+分|時間).{0,6}(以内|まで)/,
     ],
     reason: "Restricting a feature that's advertised as part of the listing (AC, heating, kitchen, hot tub, Wi-Fi…) isn't allowed. Asking guests to switch things off when they leave is fine.",
@@ -420,7 +427,7 @@ function classify(text: string, ctx: Required<Pick<CheckInput, "jurisdiction" | 
   if (ids.has("ok_checkout") && /sink|シンク|流し/i.test(text) && !/\b(wash|rinse|dry|put away|dishwasher)\b|洗|食洗機|しまっ/i.test(text)) effective = effective.filter((h) => h.id !== "dishes");
   if (ids.has("ok_checkout") && /分別|sort|separate/i.test(text) && !ids.has("trash_offsite")) effective = effective.filter((h) => h.id !== "cleaning");
   // Turning AC off when leaving is not an amenity restriction.
-  if (ids.has("ok_checkout") && /turn\s+off|消|切|オフ/i.test(text) && !/(do not|don't|dont|never|no)\s+(use|turn on)|禁止|不可|できません|ご遠慮|\d+\s*(度|°)/i.test(text)) effective = effective.filter((h) => h.id !== "amenity");
+  if (ids.has("ok_checkout") && /turn\s+off|消|切|オフ/i.test(text) && !/(do not|don't|dont|never|no)\s+(use|turn on)|禁止|不可|できません|ご遠慮|\d+\s*(度|°)|\b(below|under|above|lower than|higher than)\s*\d/i.test(text)) effective = effective.filter((h) => h.id !== "amenity");
   // Local conditions (drought, bears) soften shower/trash restrictions to a review.
   if (ids.has("local_exception")) {
     effective = effective.map((h) => (h.id === "amenity" || h.id === "trash_offsite" ? { ...h, finding: "review" as Finding, reason: `${h.reason} A local reason is given, so Airbnb may allow it as an exception; explain it.` } : h));

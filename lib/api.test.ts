@@ -48,3 +48,14 @@ test("openapi lists the check endpoint", () => {
   const doc = openapiDoc(API_INFO, PUBLIC_URL, Object.values(ENDPOINTS)) as { paths: Record<string, unknown> };
   assert.ok(doc.paths["/api/check"]);
 });
+
+test("AC temperature limit (EN + JA) → likely_flagged via the API", async () => {
+  const res = await handler(new Request(`${PUBLIC_URL}${e.path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rules: ["Do not set the AC below 24 degrees.", "エアコンは26度以下に設定しないで", "Please turn off the AC when you leave."], today: "2026-10-30" }) }));
+  assert.equal(res.status, 200);
+  const b = await res.json();
+  assert.equal(b.disclaimer, API_DISCLAIMER);
+  assert.equal(b.items[0].finding, "likely_flagged");
+  assert.ok(b.items[0].categories.includes("amenity_restriction"));
+  assert.equal(b.items[1].finding, "likely_flagged");
+  assert.equal(b.items[2].finding, "likely_ok");
+});
